@@ -34,6 +34,7 @@ import {
   STEP_COMPUTE_SUBNETWORKS,
 } from './steps/compute';
 import { STEP_CLOUD_KMS_KEYS, STEP_CLOUD_KMS_KEY_RINGS } from './steps/kms';
+import { STEP_CLOUD_BIG_QUERY_DATASETS } from './steps/big-query';
 
 interface ValidateInvocationInvalidConfigTestParams {
   instanceConfig?: Partial<IntegrationConfig>;
@@ -135,6 +136,9 @@ describe('#getStepStartStates success', () => {
         disabled: false,
       },
       [STEP_CLOUD_KMS_KEYS]: {
+        disabled: false,
+      },
+      [STEP_CLOUD_BIG_QUERY_DATASETS]: {
         disabled: false,
       },
     };

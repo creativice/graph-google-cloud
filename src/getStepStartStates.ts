@@ -24,6 +24,7 @@ import {
   STEP_COMPUTE_FIREWALLS,
 } from './steps/compute';
 import { STEP_CLOUD_KMS_KEYS, STEP_CLOUD_KMS_KEY_RINGS } from './steps/kms';
+import { STEP_CLOUD_BIG_QUERY_DATASETS } from './steps/big-query';
 
 async function getEnabledServiceNames(
   config: IntegrationConfig,
@@ -108,5 +109,6 @@ export default async function getStepStartStates(
     [STEP_COMPUTE_INSTANCES]: createStepStartState(ServiceUsageName.COMPUTE),
     [STEP_CLOUD_KMS_KEY_RINGS]: createStepStartState(ServiceUsageName.KMS),
     [STEP_CLOUD_KMS_KEYS]: createStepStartState(ServiceUsageName.KMS),
+    [STEP_CLOUD_BIG_QUERY_DATASETS]: { disabled: false },
   };
 }

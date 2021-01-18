@@ -8,6 +8,7 @@ import { iamSteps } from './steps/iam';
 import { resourceManagerSteps } from './steps/resource-manager';
 import { computeSteps } from './steps/compute';
 import { kmsSteps } from './steps/kms';
+import { bigQuerySteps } from './steps/big-query';
 
 export const invocationConfig: IntegrationInvocationConfig<IntegrationConfig> = {
   instanceConfigFields: {
@@ -25,5 +26,6 @@ export const invocationConfig: IntegrationInvocationConfig<IntegrationConfig> = 
     ...resourceManagerSteps,
     ...computeSteps,
     ...kmsSteps,
+    ...bigQuerySteps,
   ],
 };
