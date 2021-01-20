@@ -6,7 +6,7 @@ export class BigQueryClient extends Client {
 
   async iterateBigQueryDatasets(
     projectId: string,
-    callback: (data: any) => Promise<void>,
+    callback: (data: bigquery_v2.Schema$Dataset) => Promise<void>,
   ): Promise<void> {
     const auth = await this.getAuthenticatedServiceClient();
 
