@@ -102,6 +102,97 @@ Object {
 }
 `;
 
+exports[`#createComputeAddressEntity should convert to entity 1`] = `
+Object {
+  "_class": Array [
+    "IpAddress",
+  ],
+  "_key": "https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/regions/us-central1/addresses/my-test-address",
+  "_rawData": Array [
+    Object {
+      "name": "default",
+      "rawData": Object {
+        "address": "35.224.103.156",
+        "addressType": "EXTERNAL",
+        "creationTimestamp": "2021-05-21T05:34:18.344-07:00",
+        "description": "",
+        "id": "4228086364807763493",
+        "kind": "compute#address",
+        "name": "my-test-address",
+        "networkTier": "PREMIUM",
+        "region": "https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/regions/us-central1",
+        "selfLink": "https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/regions/us-central1/addresses/my-test-address",
+        "status": "RESERVED",
+      },
+    },
+  ],
+  "_type": "google_compute_address",
+  "active": undefined,
+  "addressType": "EXTERNAL",
+  "createdOn": 1621600458344,
+  "description": "",
+  "displayName": "my-test-address",
+  "id": "4228086364807763493",
+  "ipAddress": "35.224.103.156",
+  "ipVersion": undefined,
+  "kind": "compute#address",
+  "name": "my-test-address",
+  "network": undefined,
+  "networkTier": "PREMIUM",
+  "purpose": undefined,
+  "status": "RESERVED",
+  "subnetwork": undefined,
+  "webLink": "https://console.cloud.google.com/networking/addresses/list?project=j1-gc-integration-dev-v2",
+}
+`;
+
+exports[`#createComputeAddressEntity should have list of resources using the address if resources are using it 1`] = `
+Object {
+  "_class": Array [
+    "IpAddress",
+  ],
+  "_key": "https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/regions/us-central1/addresses/my-test-address",
+  "_rawData": Array [
+    Object {
+      "name": "default",
+      "rawData": Object {
+        "address": "35.224.103.156",
+        "addressType": "EXTERNAL",
+        "creationTimestamp": "2021-05-21T05:34:18.344-07:00",
+        "description": "",
+        "id": "4228086364807763493",
+        "kind": "compute#address",
+        "name": "my-test-address",
+        "networkTier": "PREMIUM",
+        "region": "https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/regions/us-central1",
+        "selfLink": "https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/regions/us-central1/addresses/my-test-address",
+        "status": "RESERVED",
+        "users": Array [
+          "https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/zones/us-central1-a/instances/instance-custom-image",
+        ],
+      },
+    },
+  ],
+  "_type": "google_compute_address",
+  "active": undefined,
+  "addressType": "EXTERNAL",
+  "createdOn": 1621600458344,
+  "description": "",
+  "displayName": "my-test-address",
+  "id": "4228086364807763493",
+  "ipAddress": "35.224.103.156",
+  "ipVersion": undefined,
+  "kind": "compute#address",
+  "name": "my-test-address",
+  "network": undefined,
+  "networkTier": "PREMIUM",
+  "purpose": undefined,
+  "status": "RESERVED",
+  "subnetwork": undefined,
+  "webLink": "https://console.cloud.google.com/networking/addresses/list?project=j1-gc-integration-dev-v2",
+}
+`;
+
 exports[`#createComputeDiskEntity should convert to entity 1`] = `
 Object {
   "_class": Array [

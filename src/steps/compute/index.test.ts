@@ -26,6 +26,7 @@ import {
   fetchTargetSslProxies,
   fetchSslPolicies,
   fetchComputeImages,
+  fetchComputeAddresses,
 } from '.';
 import {
   CLOUD_STORAGE_BUCKET_ENTITY_TYPE,
@@ -67,6 +68,7 @@ import {
   RELATIONSHIP_TYPE_TARGET_HTTPS_PROXY_HAS_SSL_POLICY,
   RELATIONSHIP_TYPE_INSTANCE_GROUP_HAS_COMPUTE_INSTANCE,
   ENTITY_TYPE_COMPUTE_IMAGE,
+  ENTITY_TYPE_COMPUTE_ADDRESS,
 } from './constants';
 import {
   // IntegrationProviderAuthorizationError,
@@ -315,6 +317,100 @@ describe('#fetchComputeImages', () => {
 
     expect(computeImageUsesCryptoKeyRelationship).toEqual(
       computeImageUsesCryptoKeyRelationship.map((r) =>
+        expect.objectContaining({
+          _class: 'USES',
+        }),
+      ),
+    );
+  });
+});
+
+describe('#fetchComputeAddresses', () => {
+  let recording: Recording;
+
+  beforeEach(() => {
+    recording = setupGoogleCloudRecording({
+      directory: __dirname,
+      name: 'fetchComputeAddresses',
+    });
+  });
+
+  afterEach(async () => {
+    await recording.stop();
+  });
+
+  test('should collect data', async () => {
+    const context = createMockStepExecutionContext<IntegrationConfig>({
+      instanceConfig: integrationConfig,
+    });
+
+    await fetchComputeNetworks(context);
+    await fetchComputeSubnetworks(context);
+    await fetchComputeInstances(context);
+    await fetchComputeAddresses(context);
+
+    expect({
+      numCollectedEntities: context.jobState.collectedEntities.length,
+      numCollectedRelationships: context.jobState.collectedRelationships.length,
+      collectedEntities: context.jobState.collectedEntities,
+      collectedRelationships: context.jobState.collectedRelationships,
+      encounteredTypes: context.jobState.encounteredTypes,
+    }).toMatchSnapshot();
+
+    expect(
+      context.jobState.collectedEntities.filter(
+        (e) => e._type === ENTITY_TYPE_COMPUTE_ADDRESS,
+      ),
+    ).toMatchGraphObjectSchema({
+      _class: 'IpAddress',
+      schema: {
+        additionalProperties: false,
+        properties: {
+          _type: { const: 'google_compute_address' },
+          _rawData: {
+            type: 'array',
+            items: { type: 'object' },
+          },
+          id: { type: 'string' },
+          kind: { type: 'string' },
+          projectId: { type: 'string' },
+          displayName: { type: 'string' },
+          name: { type: 'string' },
+          description: { type: 'string' },
+          ipAddress: { type: 'string' },
+          ipVersion: { type: 'string' },
+          addressType: { type: 'string' },
+          status: { type: 'string' },
+          purpose: { type: 'string' },
+          network: { type: 'string' },
+          networkTier: { type: 'string' },
+          subnetwork: { type: 'string' },
+          createdOn: { type: 'number' },
+          webLink: { type: 'string' },
+        },
+      },
+    });
+
+    const computeSubnetworkUsesAddressRelationship =
+      context.jobState.collectedRelationships.filter(
+        (r) => r._type === 'google_compute_subnetwork_uses_address',
+      );
+
+    expect(computeSubnetworkUsesAddressRelationship).toEqual(
+      computeSubnetworkUsesAddressRelationship.map((r) =>
+        expect.objectContaining({
+          _class: 'USES',
+        }),
+      ),
+    );
+
+    const computeInstanceUsesAddressRelationship =
+      context.jobState.collectedRelationships.filter(
+        (r) => r._type === 'google_compute_instance_uses_address',
+      );
+
+    expect(computeInstanceUsesAddressRelationship).toEqual(
+      computeInstanceUsesAddressRelationship.map((r) =>
         expect.objectContaining({
           _class: 'USES',
         }),

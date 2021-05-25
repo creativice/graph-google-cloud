@@ -32,6 +32,7 @@ import {
   STEP_PROJECT,
 } from './steps/resource-manager';
 import {
+  STEP_COMPUTE_ADDRESSES,
   STEP_COMPUTE_BACKEND_BUCKETS,
   STEP_COMPUTE_BACKEND_SERVICES,
   STEP_COMPUTE_DISKS,
@@ -186,6 +187,9 @@ describe('#getStepStartStates success', () => {
         disabled: false,
       },
       [STEP_COMPUTE_NETWORKS]: {
+        disabled: false,
+      },
+      [STEP_COMPUTE_ADDRESSES]: {
         disabled: false,
       },
       [STEP_COMPUTE_FIREWALLS]: {

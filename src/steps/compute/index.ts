@@ -30,6 +30,7 @@ import {
   createHealthCheckEntity,
   createInstanceGroupNamedPortEntity,
   createComputeImageEntity,
+  createComputeAddressEntity,
 } from './converters';
 import {
   STEP_COMPUTE_INSTANCES,
@@ -105,6 +106,11 @@ import {
   RELATIONSHIP_TYPE_DISK_USES_IMAGE,
   RELATIONSHIP_TYPE_COMPUTE_DISK_USES_KMS_CRYPTO_KEY,
   RELATIONSHIP_TYPE_IMAGE_USES_KMS_KEY,
+  STEP_COMPUTE_ADDRESSES,
+  ENTITY_TYPE_COMPUTE_ADDRESS,
+  ENTITY_CLASS_COMPUTE_ADDRESS,
+  RELATIONSHIP_TYPE_SUBNET_USES_ADDRESS,
+  RELATIONSHIP_TYPE_INSTANCE_USES_ADDRESS,
 } from './constants';
 import { compute_v1 } from 'googleapis';
 import { INTERNET, RelationshipClass } from '@jupiterone/data-model';
@@ -642,6 +648,50 @@ export async function fetchComputeSubnetworks(
   });
 }
 
+export async function fetchComputeAddresses(
+  context: IntegrationStepContext,
+): Promise<void> {
+  const { jobState, instance } = context;
+  const client = new ComputeClient({ config: instance.config });
+
+  await client.iterateComputeAddresses(async (address) => {
+    const addressEntity = createComputeAddressEntity(address, client.projectId);
+    await jobState.addEntity(addressEntity);
+
+    // Case 1 - Compute Address is used by the subnetwork (address contains subnetwork field)
+    if (address.subnetwork) {
+      const subnetworkEntity = await jobState.findEntity(address.subnetwork);
+      if (subnetworkEntity) {
+        await jobState.addRelationship(
+          createDirectRelationship({
+            _class: RelationshipClass.USES,
+            from: subnetworkEntity,
+            to: addressEntity,
+          }),
+        );
+      }
+    }
+
+    // Case 2 - Instance VM's network is using address (address's users' array contains selfLinks)
+    if (address.users) {
+      for (const user of address.users) {
+        // Right now we know this array contains VM instances selfLinks
+        // And we're creating an Instance USES Address relationship.
+        const resourceUser = await jobState.findEntity(user);
+        if (resourceUser) {
+          await jobState.addRelationship(
+            createDirectRelationship({
+              _class: RelationshipClass.USES,
+              from: resourceUser,
+              to: addressEntity,
+            }),
+          );
+        }
+      }
+    }
+  });
+}
+
 export async function fetchComputeNetworks(
   context: IntegrationStepContext,
 ): Promise<void> {
@@ -990,6 +1040,33 @@ export const computeSteps: IntegrationStep<IntegrationConfig>[] = [
     ],
     relationships: [],
     executionHandler: fetchComputeNetworks,
+  },
+  {
+    id: STEP_COMPUTE_ADDRESSES,
+    name: 'Compute Addresses',
+    entities: [
+      {
+        resourceName: 'Compute Address',
+        _type: ENTITY_TYPE_COMPUTE_ADDRESS,
+        _class: ENTITY_CLASS_COMPUTE_ADDRESS,
+      },
+    ],
+    relationships: [
+      {
+        _class: RelationshipClass.USES,
+        _type: RELATIONSHIP_TYPE_SUBNET_USES_ADDRESS,
+        sourceType: ENTITY_TYPE_COMPUTE_SUBNETWORK,
+        targetType: ENTITY_TYPE_COMPUTE_ADDRESS,
+      },
+      {
+        _class: RelationshipClass.USES,
+        _type: RELATIONSHIP_TYPE_INSTANCE_USES_ADDRESS,
+        sourceType: ENTITY_TYPE_COMPUTE_INSTANCE,
+        targetType: ENTITY_TYPE_COMPUTE_ADDRESS,
+      },
+    ],
+    dependsOn: [STEP_COMPUTE_INSTANCES],
+    executionHandler: fetchComputeAddresses,
   },
   {
     id: STEP_COMPUTE_FIREWALLS,

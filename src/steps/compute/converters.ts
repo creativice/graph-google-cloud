@@ -47,6 +47,8 @@ import {
   ENTITY_TYPE_COMPUTE_HEALTH_CHECK,
   ENTITY_CLASS_COMPUTE_IMAGE,
   ENTITY_TYPE_COMPUTE_IMAGE,
+  ENTITY_CLASS_COMPUTE_ADDRESS,
+  ENTITY_TYPE_COMPUTE_ADDRESS,
 } from './constants';
 import { getGoogleCloudConsoleWebLink, getLastUrlPart } from '../../utils/url';
 import { parseRegionNameFromRegionUrl } from '../../google-cloud/regions';
@@ -647,6 +649,39 @@ export function createComputeNetworkEntity(
         CIDR: null,
         webLink: getGoogleCloudConsoleWebLink(
           `/networking/networks/details/${data.name}?project=${projectId}`,
+        ),
+      },
+    },
+  });
+}
+
+export function createComputeAddressEntity(
+  data: compute_v1.Schema$Address,
+  projectId: string,
+) {
+  return createGoogleCloudIntegrationEntity(data, {
+    entityData: {
+      source: data,
+      assign: {
+        _class: ENTITY_CLASS_COMPUTE_ADDRESS,
+        _type: ENTITY_TYPE_COMPUTE_ADDRESS,
+        _key: data.selfLink as string,
+        id: data.id as string,
+        kind: data.kind,
+        displayName: data.name as string,
+        name: data.name,
+        description: data.description,
+        ipAddress: data.address,
+        ipVersion: data.ipVersion,
+        addressType: data.addressType,
+        status: data.status,
+        purpose: data.purpose,
+        network: data.network,
+        networkTier: data.networkTier,
+        subnetwork: data.subnetwork,
+        createdOn: parseTimePropertyValue(data.creationTimestamp),
+        webLink: getGoogleCloudConsoleWebLink(
+          `/networking/addresses/list?project=${projectId}`,
         ),
       },
     },

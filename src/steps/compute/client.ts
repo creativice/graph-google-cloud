@@ -51,7 +51,7 @@ export class ComputeClient extends Client {
     );
   }
 
-  async iterateComputeAddress(
+  async iterateComputeAddresses(
     callback: (data: compute_v1.Schema$Address) => Promise<void>,
   ) {
     const auth = await this.getAuthenticatedServiceClient();
@@ -59,7 +59,6 @@ export class ComputeClient extends Client {
     await iterateRegions(async (region) => {
       await this.iterateApi(
         async (nextPageToken) => {
-          console.log('region', region);
           return this.client.addresses.list({
             auth,
             region,
@@ -68,7 +67,6 @@ export class ComputeClient extends Client {
           });
         },
         async (data: compute_v1.Schema$AddressList) => {
-          console.log('data', data);
           for (const item of data.items || []) {
             await callback(item);
           }

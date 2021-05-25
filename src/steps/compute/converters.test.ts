@@ -1,6 +1,7 @@
 import {
   createBackendBucketEntity,
   createBackendServiceEntity,
+  createComputeAddressEntity,
   createComputeDiskEntity,
   createComputeFirewallEntity,
   createComputeImageEntity,
@@ -36,6 +37,7 @@ import {
   getMockTargetSslProxy,
   getMockSslPolicy,
   getMockComputeImage,
+  getMockComputeAddress,
 } from '../../../test/mocks';
 import { DEFAULT_INTEGRATION_CONFIG_PROJECT_ID } from '../../../test/config';
 import {
@@ -188,6 +190,30 @@ describe('#createComputeProjectEntity', () => {
             kind: 'compute#metadata',
           },
         }),
+      ),
+    ).toMatchSnapshot();
+  });
+});
+
+describe('#createComputeAddressEntity', () => {
+  test('should convert to entity', () => {
+    expect(
+      createComputeAddressEntity(
+        getMockComputeAddress(),
+        DEFAULT_INTEGRATION_CONFIG_PROJECT_ID,
+      ),
+    ).toMatchSnapshot();
+  });
+
+  test('should have list of resources using the address if resources are using it', () => {
+    expect(
+      createComputeAddressEntity(
+        getMockComputeAddress({
+          users: [
+            'https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/zones/us-central1-a/instances/instance-custom-image',
+          ],
+        }),
+        DEFAULT_INTEGRATION_CONFIG_PROJECT_ID,
       ),
     ).toMatchSnapshot();
   });

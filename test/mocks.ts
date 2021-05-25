@@ -1832,3 +1832,24 @@ export function getMockBigQueryTable(
     ...partial,
   };
 }
+
+export function getMockComputeAddress(
+  partial?: Partial<compute_v1.Schema$Address>,
+): compute_v1.Schema$Address {
+  return {
+    id: '4228086364807763493',
+    creationTimestamp: '2021-05-21T05:34:18.344-07:00',
+    name: 'my-test-address',
+    description: '',
+    address: '35.224.103.156',
+    status: 'RESERVED',
+    region:
+      'https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/regions/us-central1',
+    selfLink:
+      'https://www.googleapis.com/compute/v1/projects/j1-gc-integration-dev-v2/regions/us-central1/addresses/my-test-address',
+    networkTier: 'PREMIUM',
+    addressType: 'EXTERNAL',
+    kind: 'compute#address',
+    ...partial,
+  };
+}
