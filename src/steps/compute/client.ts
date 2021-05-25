@@ -6,6 +6,7 @@ import {
 } from '../../google-cloud/client';
 import {
   googleCloudRegions,
+  iterateRegions,
   iterateRegionZones,
 } from '../../google-cloud/regions';
 
@@ -48,6 +49,32 @@ export class ComputeClient extends Client {
         }
       },
     );
+  }
+
+  async iterateComputeAddress(
+    callback: (data: compute_v1.Schema$Address) => Promise<void>,
+  ) {
+    const auth = await this.getAuthenticatedServiceClient();
+
+    await iterateRegions(async (region) => {
+      await this.iterateApi(
+        async (nextPageToken) => {
+          console.log('region', region);
+          return this.client.addresses.list({
+            auth,
+            region,
+            project: this.projectId,
+            pageToken: nextPageToken,
+          });
+        },
+        async (data: compute_v1.Schema$AddressList) => {
+          console.log('data', data);
+          for (const item of data.items || []) {
+            await callback(item);
+          }
+        },
+      );
+    });
   }
 
   async fetchComputeImagePolicy(name: string) {
